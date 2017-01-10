@@ -34,10 +34,22 @@ public:
     
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
-    bool hasEditor() const override;
+    bool hasEditor() const override                                             { return true; }
     
     //==============================================================================
-    const String getName() const override;
+    const String getName() const override                                       { return JucePlugin_Name; }
+    
+    bool acceptsMidi() const override                                           { return true; }
+    bool producesMidi() const override                                          { return true; }
+    
+    double getTailLengthSeconds() const override                                { return 0.0; }
+    
+    //==============================================================================
+    int getNumPrograms() override                                               { return 0; }
+    int getCurrentProgram() override                                            { return 0; }
+    void setCurrentProgram (int /*index*/) override                             {}
+    const String getProgramName (int /*index*/) override                        { return String(); }
+    void changeProgramName (int /*index*/, const String& /*name*/) override     {}
     
     int getNumParameters() override;
     
@@ -56,17 +68,7 @@ public:
     bool isInputChannelStereoPair (int index) const override;
     bool isOutputChannelStereoPair (int index) const override;
     
-    bool acceptsMidi() const override;
-    bool producesMidi() const override;
-    bool silenceInProducesSilenceOut() const override;
-    double getTailLengthSeconds() const override;
-    
-    //==============================================================================
-    int getNumPrograms() override;
-    int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
+    bool silenceInProducesSilenceOut() const override                           { return false; }
     
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;

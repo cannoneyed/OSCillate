@@ -34,11 +34,6 @@ OSCToolAudioProcessor::~OSCToolAudioProcessor()
 }
 
 //==============================================================================
-const String OSCToolAudioProcessor::getName() const
-{
-    return JucePlugin_Name;
-}
-
 int OSCToolAudioProcessor::getNumParameters()
 {
     return parameters.count();
@@ -107,57 +102,6 @@ bool OSCToolAudioProcessor::isOutputChannelStereoPair (int index) const
     return true;
 }
 
-bool OSCToolAudioProcessor::acceptsMidi() const
-{
-#if JucePlugin_WantsMidiInput
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool OSCToolAudioProcessor::producesMidi() const
-{
-#if JucePlugin_ProducesMidiOutput
-    return true;
-#else
-    return false;
-#endif
-}
-
-bool OSCToolAudioProcessor::silenceInProducesSilenceOut() const
-{
-    return false;
-}
-
-double OSCToolAudioProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
-
-int OSCToolAudioProcessor::getNumPrograms()
-{
-    return 0;
-}
-
-int OSCToolAudioProcessor::getCurrentProgram()
-{
-    return 0;
-}
-
-void OSCToolAudioProcessor::setCurrentProgram (int index)
-{
-}
-
-const String OSCToolAudioProcessor::getProgramName (int index)
-{
-    return String::empty;
-}
-
-void OSCToolAudioProcessor::changeProgramName (int index, const String& newName)
-{
-}
-
 //==============================================================================
 void OSCToolAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
@@ -199,11 +143,6 @@ void OSCToolAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer&
 }
 
 //==============================================================================
-bool OSCToolAudioProcessor::hasEditor() const
-{
-    return true; // (change this to false if you choose to not supply an editor)
-}
-
 AudioProcessorEditor* OSCToolAudioProcessor::createEditor()
 {
     return new OSCToolAudioProcessorEditor (this);

@@ -34,7 +34,7 @@ public:
     
     //==============================================================================
     // This is just a standard Juce paint method...
-    void paint (Graphics& g);
+    void paint (Graphics& g) override;
     
     void timerCallback() override;
     void sliderValueChanged (Slider*) override;
@@ -69,7 +69,7 @@ private:
     Font labelFont;
     CustomLookAndFeel customLookAndFeel;
     
-    ParameterArray& parameters = getProcessor()->parameters;
+    AudioParameterFloat* oscParam = getProcessor()->oscParam;
     
     Appearance appearance;
     

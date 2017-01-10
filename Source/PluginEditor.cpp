@@ -46,7 +46,7 @@ void OSCToolAudioProcessorEditor::paint (Graphics& g)
 // This timer periodically checks whether any of the filter's parameters have changed...
 void OSCToolAudioProcessorEditor::timerCallback()
 {
-    oscSlider.setValue (parameters("OSC")->getLinearValue(), sendNotification);
+    oscSlider.setValue (oscParam->get(), sendNotification);
 }
 
 
@@ -56,15 +56,14 @@ void OSCToolAudioProcessorEditor::sliderValueChanged (Slider* slider)
     // by the host, rather than just modifying them directly, otherwise the host won't know
     // that they've changed.
 
-    Parameter* attachedParameter = parameters("OSC");
-    attachedParameter->setValueFromLinear(oscSlider.getValue());
+    oscParam->setValueNotifyingHost(oscSlider.getValue());
 
     if (slider == &oscSlider)
     {
-        oscInputLabel.setText (attachedParameter->getFormattedText(), dontSendNotification);
+        oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!!
 
-        getProcessor()->setParameterNotifyingHost(attachedParameter->getIndex(),
-                                                  attachedParameter->getLinearValue());
+        getProcessor()->setParameterNotifyingHost(oscParam->getParameterIndex(),
+                                                  oscParam->get());
 
     }
 
@@ -72,17 +71,16 @@ void OSCToolAudioProcessorEditor::sliderValueChanged (Slider* slider)
 
 void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)
 {
-    Parameter* parameter = getProcessor()->parameters("OSC");
+    AudioParameterFloat* oscParam = getProcessor()->oscParam;
     OSCManager* oscManager = &getProcessor()->oscManager;
     OSCSender* oscSender = &getProcessor()->oscSender;
 
     if (label == &oscInputLabel)
     {
         double newValue = oscInputLabel.getText().getDoubleValue();
-        newValue = parameter->getLinearValue(newValue);
 
         oscSlider.setValue(newValue, sendNotification);
-        oscInputLabel.setText (parameter->getFormattedText(), dontSendNotification);
+        oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!
     }
 
     if (label == &ipInputLabel)
@@ -121,13 +119,13 @@ void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)
     if (label == &minInputLabel)
     {
         float newValue = minInputLabel.getText().getFloatValue();
-        float oldValue = parameter->getMinimumValue();
+        float oldValue = oscParam->range.start;
 
-        if (newValue <= (parameter->getMaximumValue() - parameter->getInterval()))
+        if (newValue <= (oscParam->range.end - oscParam->range.interval))
         {
-            parameter->resetMinimumValue(newValue);
-            parameter->setMaximumValue(maxInputLabel.getText().getFloatValue());
-            oscInputLabel.setText (parameter->getFormattedText(), dontSendNotification);
+            oscParam->range.start = newValue;
+            oscParam->range.end = maxInputLabel.getText().getFloatValue();
+            oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!
         }
         else
             minInputLabel.setText((String) oldValue, dontSendNotification);
@@ -136,13 +134,13 @@ void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)
     if (label == &maxInputLabel)
     {
         float newValue = maxInputLabel.getText().getFloatValue();
-        float oldValue = parameter->getMaximumValue();
+        float oldValue = oscParam->range.end;
 
-        if (newValue >= (parameter->getMinimumValue() + parameter->getInterval()))
+        if (newValue >= (oscParam->range.start + oscParam->range.interval))
         {
-            parameter->resetMaximumValue(newValue);
-            parameter->setMinimumValue(minInputLabel.getText().getFloatValue());
-            oscInputLabel.setText (parameter->getFormattedText(), dontSendNotification);
+            oscParam->range.end = newValue;
+            oscParam->range.start = minInputLabel.getText().getFloatValue();
+            oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!
         }
         else
             maxInputLabel.setText((String) oldValue, dontSendNotification);
@@ -151,17 +149,17 @@ void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)
     if (label == &stepInputLabel)
     {
         float newValue = stepInputLabel.getText().getFloatValue();
-        float oldValue = parameter->getMaximumValue();
+        float oldValue = oscParam->range.end;
 
-        if (newValue <= (parameter->getMaximumValue() - parameter->getMinimumValue()) && newValue > 0)
+        if (newValue <= (oscParam->range.end - oscParam->range.start && newValue > 0))
         {
-            parameter->setInterval(newValue);
+            oscParam->range.interval = newValue;
 
-            minInputLabel.setText ( (String) parameter->getMinimumValue(), sendNotification);
-            maxInputLabel.setText ( (String) parameter->getMaximumValue(), sendNotification);
+            minInputLabel.setText ( (String) oscParam->range.start, sendNotification);
+            maxInputLabel.setText ( (String) oscParam->range.end, sendNotification);
 
-            parameter->setMaximumValue(maxInputLabel.getText().getFloatValue());
-            parameter->setMinimumValue(minInputLabel.getText().getFloatValue());
+            oscParam->range.end = maxInputLabel.getText().getFloatValue();
+            oscParam->range.start = minInputLabel.getText().getFloatValue();
         }
         else
             stepInputLabel.setText((String) oldValue, dontSendNotification);
@@ -176,14 +174,14 @@ void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)
 
 void OSCToolAudioProcessorEditor::initializeGUIComponents ()
 {
-    oscSlider.attachParameter(parameters("OSC"), sendNotification);
+    oscSlider.attachParameter(oscParam, sendNotification);
     oscSlider.setSliderStyle (Slider::LinearBarVertical);
 
     oscInputLabel.setEditable(false, true, false);
     oscInputLabel.setJustificationType (Justification::centred);
     oscInputLabel.setFont (appearance.labelFont);
     oscInputLabel.setColour(TextEditor::textColourId, appearance.textEditorTextColour);
-    oscInputLabel.setText (oscSlider.getAttachedParameter()->getFormattedText(), dontSendNotification);
+    oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!!
 
     ipInputLabel.setText (getProcessor()->oscManager.getIP(), dontSendNotification);
     ipInputLabel.setEditable(false, true, false);
@@ -203,14 +201,14 @@ void OSCToolAudioProcessorEditor::initializeGUIComponents ()
     messageInputLabel.setFont(appearance.labelFont);
     messageInputLabel.setMinimumHorizontalScale(1.0);
 
-    minInputLabel.setText ((String) getProcessor()->parameters("OSC")->getMinimumValue(),
+    minInputLabel.setText ((String) oscParam->range.start,
                            dontSendNotification);
     minInputLabel.setEditable(false, true, false);
     minInputLabel.setColour(TextEditor::textColourId, appearance.UIComponentColour);
     minInputLabel.setFont(appearance.labelFont);
     minInputLabel.setMinimumHorizontalScale(1.0);
 
-    maxInputLabel.setText ((String) getProcessor()->parameters("OSC")->getMaximumValue(),
+    maxInputLabel.setText ((String) oscParam->range.end,
                            dontSendNotification);
     maxInputLabel.setEditable(false, true, false);
     maxInputLabel.setColour(TextEditor::textColourId, appearance.UIComponentColour);
@@ -218,7 +216,7 @@ void OSCToolAudioProcessorEditor::initializeGUIComponents ()
     maxInputLabel.setMinimumHorizontalScale(1.0);
 
 
-    stepInputLabel.setText((String) getProcessor()->parameters("OSC")->getInterval(), dontSendNotification);
+    stepInputLabel.setText((String) oscParam->range.interval, dontSendNotification);
     stepInputLabel.setEditable(false, true, false);
     stepInputLabel.setColour(TextEditor::textColourId, appearance.UIComponentColour);
     stepInputLabel.setFont(appearance.labelFont);

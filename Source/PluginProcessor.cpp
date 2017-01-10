@@ -12,13 +12,12 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-OSCToolAudioProcessor::OSCToolAudioProcessor()
+OSCToolAudioProcessor::OSCToolAudioProcessor() : oscParam (nullptr)
 {
-    
-    parameters.addParameter (new Parameter(minimumValue, maximumValue, minimumValue), "OSC");
-    
-    parameters("OSC")->setInterval(stepValue);
-    parameters("OSC")->setShowPositive(false);
+    addParameter (oscParam = new AudioParameterFloat("OSC",
+                                                     "OSC",
+                                                     NormalisableRange<float> (minimumValue, maximumValue, stepValue),
+                                                     minimumValue));
     
     oscManager.setIP(ip);
     oscManager.setPort(port);
@@ -26,7 +25,7 @@ OSCToolAudioProcessor::OSCToolAudioProcessor()
     
     oscSender.connect(ip, port);
     
-    sendOSCMessage (parameters("OSC")->getValue());
+    sendOSCMessage (oscParam->get());
 }
 
 OSCToolAudioProcessor::~OSCToolAudioProcessor()
@@ -34,54 +33,6 @@ OSCToolAudioProcessor::~OSCToolAudioProcessor()
 }
 
 //==============================================================================
-int OSCToolAudioProcessor::getNumParameters()
-{
-    return parameters.count();
-}
-
-float OSCToolAudioProcessor::getParameter (int index)
-{
-    return parameters(index)->getLinearValue();
-}
-
-void OSCToolAudioProcessor::setParameter (int index, float linearValue)
-{
-    if (index == parameters("OSC")->getIndex())
-    {
-        sendOSCMessage(parameters("OSC")->getValue());
-    }
-    
-    return parameters(index)->setValueFromLinear(linearValue);
-}
-
-float OSCToolAudioProcessor::getParameterDefaultValue (int index)
-{
-    return parameters(index)->getDefaultValue();
-}
-
-const String OSCToolAudioProcessor::getParameterName (int index)
-{
-    DBG ("GET PARAMETER NAME");
-    return parameters(index)->getName();
-}
-
-
-
-const String OSCToolAudioProcessor::getParameterText (int index)
-{
-    return "DEPRECATE";
-}
-
-const String OSCToolAudioProcessor::getParameterTextByValue (int index, float linearValue)
-{
-    return parameters(index)->getFormattedTextFromLinear(linearValue) + parameters(index)->getUnit();
-}
-
-String OSCToolAudioProcessor::getParameterTextByValue (int parameterIndex, float parameterValue, int maximumStringLength)
-{
-    return getParameterTextByValue (parameterIndex, parameterValue).substring (0, maximumStringLength);
-}
-
 const String OSCToolAudioProcessor::getInputChannelName (int channelIndex) const
 {
     return String (channelIndex + 1);
@@ -156,25 +107,15 @@ void OSCToolAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
     
-    
-    // Create an outer XML element..
-    XmlElement xml ("OSCToolSETTINGS");
-    
-    // add some attributes to it..
-    xml.setAttribute ("OSC", parameters("OSC")->getLinearValue());
-    
-    // then use this helper function to stuff it into the binary blob and return it..
-    copyXmlToBinary (xml, destData);
-    
+    ScopedPointer<XmlElement> xml (new XmlElement ("OscillateSettings"));
+    xml->setAttribute ("OSC", (double) *oscParam);
+    copyXmlToBinary (*xml, destData);
 }
 
 void OSCToolAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-    
-    DBG ("setStateInformation");
-    
     
     // This getXmlFromBinary() helper function retrieves our XML from the binary blob..
     ScopedPointer<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
@@ -185,8 +126,7 @@ void OSCToolAudioProcessor::setStateInformation (const void* data, int sizeInByt
         if (xmlState->hasTagName ("OSCToolSETTINGS"))
         {
             // ok, now pull out our parameters..
-            
-            parameters("OSC")->setValueFromLinear((double) xmlState->getDoubleAttribute ("OSC", parameters("OSC")->getLinearValue()));
+            *oscParam = xmlState->getDoubleAttribute ("OSC", 1.0);
         }
     }
     

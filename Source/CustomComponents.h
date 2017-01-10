@@ -17,7 +17,7 @@ public:
         if (modifiers.isAltDown())
         {
             if (attachedParameter != nullptr) {
-                Slider::setValue(attachedParameter->getLinearValue(attachedParameter->getDefaultValue()), sendNotification);
+                Slider::setValue(attachedParameter->range.start, sendNotification);
             }
             else {
                 Slider::setValue(1.0, sendNotification);
@@ -29,22 +29,22 @@ public:
         }
     }
     
-    void attachParameter (Parameter* ParameterToAttach, const NotificationType notification)
+    void attachParameter (AudioParameterFloat* ParameterToAttach, const NotificationType notification)
     {
         attachedParameter = ParameterToAttach;
-        Slider::setValue(attachedParameter->getLinearValue(attachedParameter->getValue()), notification);
+        Slider::setValue(attachedParameter->get(), notification);
     }
     
-    Parameter* getAttachedParameter ()
+    AudioParameterFloat* getAttachedParameter ()
     {
         return attachedParameter;
     }
     
     void updateAttachedParameter () {
-        attachedParameter->setValue(getValue());
+        attachedParameter->setValueNotifyingHost(getValue());
     }
     
-    void attachParameter (Parameter* ParameterToAttach)
+    void attachParameter (AudioParameterFloat* ParameterToAttach)
     {
         attachParameter(ParameterToAttach, dontSendNotification);
     }
@@ -52,7 +52,7 @@ public:
     
     
 private:
-    Parameter* attachedParameter = nullptr;
+    AudioParameterFloat* attachedParameter = nullptr;
     
 };
 
@@ -282,18 +282,18 @@ private:
 class ParameterLabel :          public NumericalLabel
 {
 public:
-    void attachParameter (Parameter* parameterToAttach)
+    void attachParameter (AudioParameterFloat* parameterToAttach)
     {
         attachedParameter = parameterToAttach;
     }
     
-    Parameter* getAttachedParameter()
+    AudioParameterFloat* getAttachedParameter()
     {
         return attachedParameter;
     }
     
 private:
-    Parameter* attachedParameter;
+    AudioParameterFloat* attachedParameter;
 };
 
 class NameLabel :               public Label

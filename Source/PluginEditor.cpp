@@ -46,7 +46,7 @@ void OSCToolAudioProcessorEditor::paint (Graphics& g)
 // This timer periodically checks whether any of the filter's parameters have changed...
 void OSCToolAudioProcessorEditor::timerCallback()
 {
-    oscSlider.setValue (oscParam->get(), sendNotification);
+    
 }
 
 
@@ -57,15 +57,13 @@ void OSCToolAudioProcessorEditor::sliderValueChanged (Slider* slider)
     // that they've changed.
 
     oscParam->setValueNotifyingHost(oscSlider.getValue());
+    DBG(oscParam->range.start);
+    DBG(oscParam->range.end);
+    DBG(oscParam->range.interval);
+    DBG(oscParam->get());
+    DBG("---");
+    oscInputLabel.setText ((String)oscParam->get(), dontSendNotification);
 
-    if (slider == &oscSlider)
-    {
-        oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!!
-
-        getProcessor()->setParameterNotifyingHost(oscParam->getParameterIndex(),
-                                                  oscParam->get());
-
-    }
 
 }
 

@@ -75,9 +75,9 @@ public:
     
     String message = "/osc/address";
     
-    float minimumValue = 0.0;
-    float maximumValue = 127.0;
-    float stepValue = 1;
+    float minimumValue = 0.0f;
+    float maximumValue = 127.0f;
+    float stepValue = 1.0f;
     
     int bufferSize = 1024;
     

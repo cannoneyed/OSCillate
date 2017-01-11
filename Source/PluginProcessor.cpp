@@ -14,9 +14,10 @@
 //==============================================================================
 OSCToolAudioProcessor::OSCToolAudioProcessor() : oscParam (nullptr)
 {
+    NormalisableRange<float> range = NormalisableRange<float> (minimumValue, maximumValue, stepValue);
     addParameter (oscParam = new AudioParameterFloat("OSC",
                                                      "OSC",
-                                                     NormalisableRange<float> (minimumValue, maximumValue, stepValue),
+                                                     range,
                                                      minimumValue));
     
     oscManager.setIP(ip);

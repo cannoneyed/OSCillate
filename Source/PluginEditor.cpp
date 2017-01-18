@@ -57,14 +57,8 @@ void OSCToolAudioProcessorEditor::sliderValueChanged (Slider* slider)
     // that they've changed.
 
     oscParam->setValueNotifyingHost(oscSlider.getValue());
-    DBG(oscParam->range.start);
-    DBG(oscParam->range.end);
-    DBG(oscParam->range.interval);
-    DBG(oscParam->get());
-    DBG("---");
-    oscInputLabel.setText ((String)oscParam->get(), dontSendNotification);
-
-
+    float value = oscParam->get();
+    oscInputLabel.setText ((String)oscParam->range.snapToLegalValue(value), dontSendNotification);
 }
 
 void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)

@@ -10,16 +10,16 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "OSCAudioParameter.h"
 
 //==============================================================================
 OSCToolAudioProcessor::OSCToolAudioProcessor() : oscParam (nullptr)
 {
     NormalisableRange<float> range = NormalisableRange<float> (minimumValue, maximumValue, stepValue);
-    addParameter (oscParam = new AudioParameterFloat("OSC",
+    addParameter (oscParam = new OSCAudioParameterFloat("OSC",
                                                      "OSC",
                                                      range,
                                                      minimumValue));
-    
     oscManager.setIP(ip);
     oscManager.setPort(port);
     oscManager.setAddress(message);

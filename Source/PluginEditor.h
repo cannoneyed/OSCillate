@@ -69,7 +69,7 @@ private:
     Font labelFont;
     CustomLookAndFeel customLookAndFeel;
     
-    AudioParameterFloat* oscParam = getProcessor()->oscParam;
+    OSCAudioParameterFloat* oscParam = getProcessor()->oscParam;
     
     Appearance appearance;
     

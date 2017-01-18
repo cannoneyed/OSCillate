@@ -13,10 +13,12 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "OSCManager.h"
+#include "OSCAudioParameter.h"
 
 //==============================================================================
 /**
  */
+
 class OSCToolAudioProcessor  : public AudioProcessor
 {
 public:
@@ -65,7 +67,7 @@ public:
     void sendOSCMessage (float value);
     void setMessage();
     
-    AudioParameterFloat* oscParam;
+    OSCAudioParameterFloat* oscParam;
     
     OSCSender oscSender;
     OSCManager oscManager;

@@ -38,7 +38,6 @@ public:
         float value = this->get();
         return (String) value;
     }
-    
 };
 
 

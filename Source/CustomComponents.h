@@ -52,8 +52,8 @@ public:
     void updateSliderPos() {
         const float newValue = attachedParameter->get();
         if (newValue != (float) Slider::getValue() && ! isMouseButtonDown())
-            DBG(newValue);
-            Slider::setValue (newValue);
+            Slider::setValue (attachedParameter->range.convertTo0to1(newValue));
+            updateAttachedParameter();
     }
     
     void updateAttachedParameter () {
@@ -71,74 +71,6 @@ private:
     OSCAudioParameterFloat* attachedParameter = nullptr;
     
 };
-
-
-
-//
-////==============================================================================
-//// This is a handy slider subclass that controls an AudioProcessorParameter
-//// (may move this class into the library itself at some point in the future..)
-//class ParameterSlider   : public Slider,
-//private Timer
-//{
-//public:
-//    ParameterSlider (OSCAudioParameterFloat& p)
-//    : Slider (p.getName (256)), param (p)
-//    {
-//        setRange (0.0, 1.0, 0.0);
-//        setTextBoxStyle(Slider::NoTextBox, 0, 0, 0);
-//        setVelocityModeParameters(3.0, 1, 0.015, true);
-//
-//        startTimerHz (30);
-//        updateSliderPos();
-//    }
-//    
-//    void mouseDown (const MouseEvent& e)
-//    {
-//        
-//        ModifierKeys modifiers = ModifierKeys::getCurrentModifiersRealtime();
-//        
-//        // check the mod keys ..
-//        if (modifiers.isAltDown())
-//        {
-//            Slider::setValue(param->range.start, sendNotification);
-//        }
-//        else
-//        {
-//            Slider::mouseDown(e);   // to the usual thing .... drag the slider
-//        }
-//    }
-//    
-//    void valueChanged() override
-//    {
-//        if (isMouseButtonDown())
-//            param.setValueNotifyingHost ((float) Slider::getValue());
-//        else
-//            param.setValue ((float) Slider::getValue());
-//    }
-//    
-//    void timerCallback() override       { updateSliderPos(); }
-//    
-//    void startedDragging() override     { param.beginChangeGesture(); }
-//    void stoppedDragging() override     { param.endChangeGesture();   }
-//    
-//    double getValueFromText (const String& text) override   { return param.getValueForText (text); }
-//    String getTextFromValue (double value) override         { return param.getText ((float) value, 1024); }
-//    
-//    void updateSliderPos()
-//    {
-//        const float newValue = param.getValue();
-//        
-//        if (newValue != (float) Slider::getValue() && ! isMouseButtonDown())
-//            Slider::setValue (newValue);
-//    }
-//    
-//    OSCAudioParameterFloat& param;
-//    
-//    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParameterSlider)
-//};
-
-
 
 
 

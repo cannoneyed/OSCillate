@@ -55,10 +55,13 @@ void OSCToolAudioProcessorEditor::sliderValueChanged (Slider* slider)
     // It's vital to use setParameterNotifyingHost to change any parameters that are automatable
     // by the host, rather than just modifying them directly, otherwise the host won't know
     // that they've changed.
+    
+    DBG("Slide Value Changed");
 
     oscParam->setValueNotifyingHost(oscSlider.getValue());
     float value = oscParam->get();
     oscInputLabel.setText ((String)oscParam->range.snapToLegalValue(value), dontSendNotification);
+    getProcessor()->sendOSCMessage(value);
 }
 
 void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)

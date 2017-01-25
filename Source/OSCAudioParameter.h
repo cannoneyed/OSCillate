@@ -28,7 +28,7 @@ public:
         return *this;
     };
     
-    virtual String getText (float value, int /*maximumStringLength*/) const override {
+    String getText (float value, int /*maximumStringLength*/) const override {
         auto denormalized = this->range.convertFrom0to1(value);
         auto returnValue = (String) this->range.snapToLegalValue(denormalized);
         return returnValue;

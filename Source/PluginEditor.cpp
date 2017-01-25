@@ -56,11 +56,10 @@ void OSCToolAudioProcessorEditor::sliderValueChanged (Slider* slider)
     // by the host, rather than just modifying them directly, otherwise the host won't know
     // that they've changed.
     
-    DBG("Slide Value Changed");
 
     oscParam->setValueNotifyingHost(oscSlider.getValue());
-    float value = oscParam->get();
-    oscInputLabel.setText ((String)oscParam->range.snapToLegalValue(value), dontSendNotification);
+    float value = oscParam->range.snapToLegalValue(oscParam->get());
+    oscInputLabel.setText ((String)value, dontSendNotification);
     getProcessor()->sendOSCMessage(value);
 }
 

@@ -29,8 +29,15 @@ public:
     };
     
     virtual String getText (float value, int /*maximumStringLength*/) const override {
-        return "STRING";
+        auto denormalized = this->range.convertFrom0to1(value);
+        auto returnValue = (String) this->range.snapToLegalValue(denormalized);
+        return returnValue;
     };
+    
+    String getValueString () const {
+        float value = this->get();
+        return (String) value;
+    }
     
 };
 

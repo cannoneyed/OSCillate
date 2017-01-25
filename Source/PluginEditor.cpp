@@ -63,16 +63,16 @@ void OSCToolAudioProcessorEditor::sliderValueChanged (Slider* slider)
 
 void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)
 {
-    AudioParameterFloat* oscParam = getProcessor()->oscParam;
+    OSCAudioParameterFloat* oscParam = getProcessor()->oscParam;
     OSCManager* oscManager = &getProcessor()->oscManager;
     OSCSender* oscSender = &getProcessor()->oscSender;
 
     if (label == &oscInputLabel)
     {
         double newValue = oscInputLabel.getText().getDoubleValue();
-
+        
         oscSlider.setValue(newValue, sendNotification);
-        oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!
+        oscInputLabel.setText (oscParam->getValueString(), dontSendNotification); // MUST FIX ME!!!
     }
 
     if (label == &ipInputLabel)
@@ -117,7 +117,7 @@ void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)
         {
             oscParam->range.start = newValue;
             oscParam->range.end = maxInputLabel.getText().getFloatValue();
-            oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!
+            oscInputLabel.setText (oscParam->getValueString(), dontSendNotification);
         }
         else
             minInputLabel.setText((String) oldValue, dontSendNotification);
@@ -132,7 +132,7 @@ void OSCToolAudioProcessorEditor::labelTextChanged(Label* label)
         {
             oscParam->range.end = newValue;
             oscParam->range.start = minInputLabel.getText().getFloatValue();
-            oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!
+            oscInputLabel.setText (oscParam->getValueString(), dontSendNotification);
         }
         else
             maxInputLabel.setText((String) oldValue, dontSendNotification);
@@ -173,7 +173,7 @@ void OSCToolAudioProcessorEditor::initializeGUIComponents ()
     oscInputLabel.setJustificationType (Justification::centred);
     oscInputLabel.setFont (appearance.labelFont);
     oscInputLabel.setColour(TextEditor::textColourId, appearance.textEditorTextColour);
-    oscInputLabel.setText ("HEY", dontSendNotification); // MUST FIX ME!!!!
+    oscInputLabel.setText (oscParam->getValueString(), dontSendNotification);
 
     ipInputLabel.setText (getProcessor()->oscManager.getIP(), dontSendNotification);
     ipInputLabel.setEditable(false, true, false);

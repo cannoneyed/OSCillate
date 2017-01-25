@@ -17,9 +17,9 @@ OSCToolAudioProcessor::OSCToolAudioProcessor() : oscParam (nullptr)
 {
     NormalisableRange<float> range = NormalisableRange<float> (minimumValue, maximumValue, stepValue);
     addParameter (oscParam = new OSCAudioParameterFloat("OSC",
-                                                     "OSC",
-                                                     range,
-                                                     minimumValue));
+                                                        "OSC",
+                                                        range,
+                                                        minimumValue));
     oscManager.setIP(ip);
     oscManager.setPort(port);
     oscManager.setAddress(message);

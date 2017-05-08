@@ -20,7 +20,7 @@ public:
                             ) :
         AudioParameterFloat (parameterID,
                              name,
-                             normalisableRange,
+                              normalisableRange,
                              defaultValue) {};
     
     OSCAudioParameterFloat& operator= (float newValue) {
@@ -37,6 +37,16 @@ public:
     String getValueString () const {
         float value = this->get();
         return (String) value;
+    }
+    
+    void setValue (float newValue) override {
+        DBG(newValue);
+        AudioParameterFloat::setValue(newValue);
+    }
+    
+    void setValueNotifyingHost (float newValue) {
+        DBG("FUCK");
+        AudioParameterFloat::setValueNotifyingHost(newValue);
     }
 };
 
